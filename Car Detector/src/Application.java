@@ -9,10 +9,11 @@ import java.io.IOException;
 
 public class Application extends JFrame {
 
+    private int[][] bgPixels;
     final private int  MAX_FRAMES = 50;
     private int amOfFrames = 0;
-    private Image bgImage;
-    private Image[] frames;
+    private BufferedImage bgImage;
+    private BufferedImage[] frames;
 
     public Application(){
         super("Car Detection");
@@ -22,7 +23,7 @@ public class Application extends JFrame {
         tabbedPane.setPreferredSize(new Dimension(1000, 700));
 
         JDialog bgDialog = new JDialog();
-        bgDialog.setSize(100,50);
+        bgDialog.setSize(300,200);
         bgDialog.setTitle("Select Background");
         JButton addBg = new JButton("Add BackGround...");
         addBg.addActionListener(new ActionListener() {
@@ -36,6 +37,7 @@ public class Application extends JFrame {
                     try {
                         bgImage = ImageIO.read(chooser.getSelectedFile());
                         tabbedPane.addTab("Background", new ImagePanel(bgImage));
+                        calculateBgColors();
                         bgDialog.setVisible(false);
                     } catch (IOException e1) {
                         e1.printStackTrace();
@@ -47,7 +49,7 @@ public class Application extends JFrame {
         bgDialog.setVisible(true);
 
 
-        frames = new Image[MAX_FRAMES];
+        frames = new BufferedImage[MAX_FRAMES];
         JButton frameButton = new JButton("Add new frame...");
         frameButton.addActionListener(new ActionListener() {
             @Override
@@ -60,6 +62,7 @@ public class Application extends JFrame {
                     try {
                         frames[amOfFrames] = ImageIO.read(chooser.getSelectedFile());
                         tabbedPane.addTab("Frame"+ (amOfFrames+1),new ImagePanel(frames[amOfFrames]));
+                        checkFrame(frames[amOfFrames]);
                         amOfFrames++;
                     } catch (IOException e1) {
                         e1.printStackTrace();
@@ -74,13 +77,24 @@ public class Application extends JFrame {
         content.add(tabbedPane);
         add(frameButton,BorderLayout.NORTH);
         add(content, BorderLayout.CENTER);
-        b
-
-
     }
 
     public void calculateBgColors(){
-        for(int i=0;i<)
-            BufferedImage image=new BufferedImage()
+        bgPixels = new int[bgImage.getWidth()][bgImage.getHeight()];
+        for(int i=0;i<bgImage.getWidth();i++){
+            for(int j=0;j<bgImage.getHeight();j++){
+                bgPixels[i][j] = bgImage.getRGB(i,j);
+            }
+        }
+    }
+
+    public void checkFrame(BufferedImage frame){
+        for(int i=0;i<frame.getWidth();i++){
+            for(int j=0;j<frame.getHeight();j++){
+                if(frame.getRGB(i,j)!=bgPixels[i][j]){
+                    frame.setRGB(i,j,Color.GREEN.getRGB());
+                }
+            }
+        }
     }
 }
